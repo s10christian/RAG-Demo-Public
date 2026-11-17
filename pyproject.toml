@@ -1,0 +1,8 @@
+[project]
+name = "rag-demo"
+version = "1.0.0"
+requires-python = ">=3.12,<3.15"
+description = "Authenticated RAG API, MCP server, and integrations"
+
+[tool.vercel]
+entrypoint = "app.main:app"

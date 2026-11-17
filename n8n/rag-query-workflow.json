@@ -1,0 +1,75 @@
+{
+  "name": "RAG Demo - Ask Knowledge Base",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rag-query",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "rag-webhook",
+      "name": "RAG Query Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "rag-query"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.RAG_API_URL}}/api/v1/query",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.RAG_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ question: $json.body.question, knowledge_base: $json.body.knowledge_base || 'default', top_k: $json.body.top_k || 5 }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "rag-api",
+      "name": "Call RAG API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "RAG Query Webhook": {
+      "main": [
+        [
+          {
+            "node": "Call RAG API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionId": "1"
+}

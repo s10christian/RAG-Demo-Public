@@ -1,0 +1,75 @@
+{
+  "name": "RAG Demo - Ingest Text Document",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rag-ingest",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "rag-ingest-webhook",
+      "name": "RAG Ingest Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "rag-ingest"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.RAG_API_URL}}/api/v1/documents/text",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.RAG_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ filename: $json.body.filename, text: $json.body.text, knowledge_base: $json.body.knowledge_base || 'default' }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "rag-ingest-api",
+      "name": "Index Text in RAG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "RAG Ingest Webhook": {
+      "main": [
+        [
+          {
+            "node": "Index Text in RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionId": "1"
+}
